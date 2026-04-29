@@ -23,7 +23,7 @@ int	main(int argc, char **argv, char **envp)
 	infile = open(argv[1], O_RDONLY);
 	if (infile == -1)
 		return (ft_printf("pipex: %s: %s\n", argv[1], strerror(errno)), 0);
-	outfile = open(argv[argc - 1], O_CREAT | O_RDWR);
+	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC);
 	if (outfile == -1)
 		return (ft_printf("pipex: %s: %s\n", argv[1], strerror(errno)), 0);
 //	i = 0;

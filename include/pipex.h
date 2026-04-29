@@ -22,4 +22,6 @@
 
 void	early_exit(void);
 void	spawn_child(int infile, int outfile, char *cmd, char **envp);
+void	debug_argv(char **argv);
+
 #endif
