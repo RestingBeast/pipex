@@ -17,6 +17,8 @@ static char	**get_env_path(char **envp)
 	char	**path;
 	char	*tmp;
 
+	if (*envp == NULL)
+		return (ft_split("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", ':'));
 	while (*envp != NULL)
 	{
 		if (ft_strncmp(*envp, "PATH=", 5) == 0)
@@ -43,11 +45,11 @@ static char	*find_executable(char *cmd, char **envp)
 	{
 		res = ft_strjoin(path[i], filename);
 		if (access(res, F_OK | X_OK) == 0)
-			return (free(cmd), free_double_ptr(path), res);
+			return (free(filename), free_double_ptr(path), res);
 		free(res);
 		i++;
 	}
-	free(cmd);
+	free(filename);
 	free_double_ptr(path);
 	return (NULL);
 }
