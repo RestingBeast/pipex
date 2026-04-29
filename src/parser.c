@@ -17,7 +17,7 @@ static char	**get_env_path(char **envp)
 	char	**path;
 	char	*tmp;
 
-	if (*envp == NULL)
+	if (envp == NULL || *envp == NULL)
 		return (ft_split("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", ':'));
 	while (*envp != NULL)
 	{
@@ -65,7 +65,6 @@ void	parse_cmd_and_execute(char *cmd, char **envp)
 	{
 		ft_putstr_fd(argv[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
-		free(filename);
 		free_double_ptr(argv);
 		_exit(EXIT_FAILURE);
 	}
