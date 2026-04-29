@@ -12,5 +12,14 @@
 
 #ifndef PIPEX_H
 # define PIPEX_H
+
+# include <fcntl.h>
+# include <errno.h>
+# include <string.h>
+# include <stdio.h>
 # include "ft_printf.h"
+# include "get_next_line.h"
+
+void	early_exit(void);
+void	spawn_child(int outfile);
 #endif
