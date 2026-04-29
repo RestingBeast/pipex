@@ -23,9 +23,9 @@ int	main(int argc, char **argv, char **envp)
 	infile = open(argv[1], O_RDONLY);
 	if (infile == -1)
 		return (ft_printf("pipex: %s: %s\n", argv[1], strerror(errno)), 0);
-	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC);
+	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
-		return (ft_printf("pipex: %s: %s\n", argv[1], strerror(errno)), 0);
+		return (ft_printf("pipex: %s: %s\n", argv[argc - 1], strerror(errno)), 0);
 //	i = 0;
 //	while (i++ < argc - 2)
 //		spawn_child();

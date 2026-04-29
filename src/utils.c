@@ -59,7 +59,8 @@ char	*find_executable(char *cmd, char **envp)
 	while (path[i] != NULL)
 	{
 		res = ft_strjoin(path[i], cmd);
-		ft_printf("%s\n", res);
+		if (access(res, F_OK | X_OK) == 0)
+			return (free(cmd), free_argv(path), res);
 		free(res);
 		i++;
 	}
@@ -71,11 +72,20 @@ char	*find_executable(char *cmd, char **envp)
 int	parse_cmd_and_exe(char *cmd, char **envp)
 {
 	char	**argv;
+	char	*p_cmd;
 
 	argv = ft_split(cmd, ' ');
-	// debug_argv(argv + 1);
-	envp++;
-	find_executable(cmd, envp);
+	p_cmd = find_executable(argv[0], envp);
+	if (!p_cmd)
+		return (0);
+	if (execve(p_cmd, argv, envp) == -1)
+	{
+		free(p_cmd);
+		free_argv(argv);
+		perror("pipex");
+		_exit(EXIT_FAILURE);
+	}
+	free(p_cmd);
 	free_argv(argv);
 	return (0);
 }
@@ -91,8 +101,6 @@ void	spawn_child(int read_fd, int write_fd, char *cmd, char **envp)
 		return (close(read_fd), early_exit());
 	if (dup2(write_fd, fd[1]) == -1)
 		return (close(write_fd), early_exit());
-	parse_cmd_and_exe(cmd, envp);
-	return ;
 	pid = fork();
 	if (pid == -1)
 		return (early_exit());
@@ -104,9 +112,7 @@ void	spawn_child(int read_fd, int write_fd, char *cmd, char **envp)
 			_exit(EXIT_FAILURE);
 		close(fd[0]);
 		close(fd[1]);
-		char *argv[] = {NULL};
-		if (execve(cmd, argv, envp) == -1)
-			_exit(EXIT_FAILURE);
+		parse_cmd_and_exe(cmd, envp);
 	}
 	else
 	{
