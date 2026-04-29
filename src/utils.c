@@ -18,80 +18,12 @@ void	early_exit(void)
 	exit(EXIT_FAILURE);
 }
 
-void	free_argv(char **argv)
+void	free_double_ptr(char **argv)
 {
 	int	i = 0;
 	while (argv[i] != NULL)
 		free(argv[i++]);
 	free(argv);
-}
-
-void	debug_argv(char **argv)
-{
-	int	i;
-
-	i = 0;
-	while (argv[i] != NULL)
-	{
-		ft_printf("argv[%d]: %s\n", (i + 1), argv[i]);
-		i++;
-	}
-}
-
-char	*find_executable(char *cmd, char **envp)
-{
-	char	**path;
-	char	*res;
-	char	*tmp;
-	int		i;
-
-	while (*envp != NULL)
-	{
-		if (ft_strncmp(*envp, "PATH=", 5) == 0)
-			path = ft_split(*envp, ':');
-		envp++;
-	}
-	tmp = path[0];
-	path[0] = ft_substr(tmp, 5, ft_strlen(tmp) - 5);
-	free(tmp);
-	i = 0;
-	cmd = ft_strjoin("/", cmd);
-	while (path[i] != NULL)
-	{
-		res = ft_strjoin(path[i], cmd);
-		if (access(res, F_OK | X_OK) == 0)
-			return (free(cmd), free_argv(path), res);
-		free(res);
-		i++;
-	}
-	free(cmd);
-	free_argv(path);
-	return (NULL);
-}
-
-int	parse_cmd_and_exe(char *cmd, char **envp)
-{
-	char	**argv;
-	char	*p_cmd;
-
-	argv = ft_split(cmd, ' ');
-	p_cmd = find_executable(argv[0], envp);
-	if (!p_cmd)
-	{
-		ft_putstr_fd(argv[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		free(p_cmd);
-		free_argv(argv);
-		_exit(EXIT_FAILURE);
-	}
-	if (execve(p_cmd, argv, envp) == -1)
-	{
-		free(p_cmd);
-		free_argv(argv);
-		perror("pipex");
-		_exit(EXIT_FAILURE);
-	}
-	return (0);
 }
 
 void	spawn_child(int read_fd, int write_fd, char *cmd, char **envp)
@@ -116,7 +48,7 @@ void	spawn_child(int read_fd, int write_fd, char *cmd, char **envp)
 			_exit(EXIT_FAILURE);
 		close(fd[0]);
 		close(fd[1]);
-		parse_cmd_and_exe(cmd, envp);
+		parse_cmd_and_execute(cmd, envp);
 	}
 	else
 	{

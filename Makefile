@@ -8,6 +8,7 @@ GNL_DIR = get_next_line
 INCLUDE = include
 SRC = src/pipex.c \
       src/utils.c \
+      src/parser.c \
       $(GNL_DIR)/get_next_line.c \
       $(GNL_DIR)/get_next_line_utils.c
 OBJ = $(SRC:.c=.o)

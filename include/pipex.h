@@ -20,8 +20,11 @@
 # include "ft_printf.h"
 # include "get_next_line.h"
 
+// utils.c
 void	early_exit(void);
+void	free_double_ptr(char **argv);
 void	spawn_child(int infile, int outfile, char *cmd, char **envp);
-void	debug_argv(char **argv);
+// parser.c
+void	parse_cmd_and_execute(char *cmd, char **envp);
 
 #endif
