@@ -18,29 +18,35 @@ void	early_exit(void)
 	exit(EXIT_FAILURE);
 }
 
-void	spawn_child(int outfile)
+void	spawn_child(int read_fd, int write_fd, char *cmd, char **envp)
 {
 	int		fd[2];
 	pid_t	pid;
 
 	if (pipe(fd) == -1)
 		return (early_exit());
+	if (dup2(read_fd, fd[0]) == -1)
+		return (close(read_fd), early_exit());
+	if (dup2(write_fd, fd[1]) == -1)
+		return (close(write_fd), early_exit());
 	pid = fork();
 	if (pid == -1)
 		return (early_exit());
 	if (pid == 0)
 	{
-		close(fd[1]);
-		char *line = get_next_line(fd[0]);
-		if (line != NULL)
-			write(outfile , "success\n", 8);
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			_exit(EXIT_FAILURE);
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			_exit(EXIT_FAILURE);
 		close(fd[0]);
-		_exit(EXIT_SUCCESS);
+		close(fd[1]);
+		char *argv[] = {NULL};
+		if (execve(cmd, argv, envp) == -1)
+			_exit(EXIT_FAILURE);
 	}
 	else
 	{
 		close(fd[0]);
-		ft_putstr_fd("Hello, World\n", fd[1]);
 		close(fd[1]);
 	}
 }

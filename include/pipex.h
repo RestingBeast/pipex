@@ -21,5 +21,5 @@
 # include "get_next_line.h"
 
 void	early_exit(void);
-void	spawn_child(int outfile);
+void	spawn_child(int infile, int outfile, char *cmd, char **envp);
 #endif
