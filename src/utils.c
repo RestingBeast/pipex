@@ -77,7 +77,13 @@ int	parse_cmd_and_exe(char *cmd, char **envp)
 	argv = ft_split(cmd, ' ');
 	p_cmd = find_executable(argv[0], envp);
 	if (!p_cmd)
-		return (0);
+	{
+		ft_putstr_fd(argv[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+		free(p_cmd);
+		free_argv(argv);
+		_exit(EXIT_FAILURE);
+	}
 	if (execve(p_cmd, argv, envp) == -1)
 	{
 		free(p_cmd);
@@ -85,8 +91,6 @@ int	parse_cmd_and_exe(char *cmd, char **envp)
 		perror("pipex");
 		_exit(EXIT_FAILURE);
 	}
-	free(p_cmd);
-	free_argv(argv);
 	return (0);
 }
 
