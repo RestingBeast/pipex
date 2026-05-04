@@ -23,7 +23,7 @@
 // utils.c
 void	early_exit(void);
 void	free_double_ptr(char **argv);
-void	spawn_child(int infile, int outfile, char *cmd, char **envp);
+void	spawn_child_1(int *arr_fd, char **cmd, char **envp);
 // parser.c
 void	parse_cmd_and_execute(char *cmd, char **envp);
 
