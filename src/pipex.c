@@ -12,34 +12,34 @@
 
 #include "pipex.h"
 
-void	duplicate_fds(int infile, int outfile, int *fd)
+int	file_error(char *filename)
 {
-	fd[0] = dup(infile);
-	if (fd[0] == -1)
-		return (early_exit());
-	close(infile);
-	fd[2] = dup(outfile);
-	if (fd[2] == -1)
-		return (early_exit());
-	close(outfile);
+	ft_printf("pipex: %s: %s\n", filename, strerror(errno));
+	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	int	infile;
 	int	outfile;
-	int	fd[3];
+	int	prev_read;
+	int	i;
 
 	if (argc != 5)
 		return (0);
 	infile = open(argv[1], O_RDONLY);
 	if (infile == -1)
-		return (ft_printf("pipex: %s: %s\n", argv[1], strerror(errno)), 0);
+		return (file_error(argv[1]));
 	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
-		return (ft_printf("pipex: %s: %s\n", argv[argc - 1],
-				strerror(errno)), 0);
-	duplicate_fds(infile, outfile, fd);
-	spawn_child_1(fd, argv + 2, envp);
+		return (file_error(argv[argc - 1]));
+	i = 1;
+	prev_read = infile;
+	while (++i < argc - 1)
+	{
+		
+		prev_read = 
+	}
+	spawn_child(fd, argv + 2, envp);
 	return (0);
 }
