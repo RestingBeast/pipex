@@ -12,10 +12,20 @@
 
 #include "pipex.h"
 
-int	file_error(char *filename)
+static int	file_error(char *filename)
 {
 	ft_printf("pipex: %s: %s\n", filename, strerror(errno));
 	return (0);
+}
+
+static int		exe_cmd(int prev_fd, char *cmd, char **envp)
+{
+	int	fds[2];
+
+	if (pipe(fds) == -1)
+		return (early_exit(), 0);
+	spawn_child(prev_fd, fds, cmd, envp);
+	return (fds[0]);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -37,6 +47,6 @@ int	main(int argc, char **argv, char **envp)
 	prev_read = infile;
 	while (++i < argc - 2)
 		prev_read = exe_cmd(prev_read, argv[i], envp);
-	spawn_last_child(prev_read, outfile, argv[i], envp);
+	kill_zombies(i, spawn_last_child(prev_read, outfile, argv[i], envp));
 	return (0);
 }
