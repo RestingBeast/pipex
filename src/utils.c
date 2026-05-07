@@ -26,7 +26,41 @@ void	free_double_ptr(char **argv)
 	free(argv);
 }
 
-void	spawn_child(int read, int write, char *cmd, char **envp)
+void	spawn_child(int read, int *fds, char *cmd, char **envp)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return (early_exit());
+	if (pid == 0)
+	{
+		if (dup2(read, STDIN_FILENO) == -1)
+			_exit(EXIT_FAILURE);
+		if (dup2(fds[1], STDOUT_FILENO) == -1)
+			_exit(EXIT_FAILURE);
+		close(read);
+		close(fds[0]);
+		close(fds[1]);
+		parse_cmd_and_execute(cmd, envp);
+	}
+	else
+	{
+		close(fds[1]);
+	}
+}
+
+int		exe_cmd(int prev_fd, char *cmd, char **envp)
+{
+	int	fds[2];
+
+	if (pipe(fds) == -1)
+		return (early_exit(), 0);
+	spawn_child(prev_fd, fds, cmd, envp);
+	return (fds[0]);
+}
+
+void	spawn_last_child(int read, int write, char *cmd, char **envp)
 {
 	pid_t	pid;
 
@@ -44,19 +78,8 @@ void	spawn_child(int read, int write, char *cmd, char **envp)
 		parse_cmd_and_execute(cmd, envp);
 	}
 	else
+	{
+		close(read);
 		close(write);
-}
-
-void	normal_case(int prev_read, char *cmd, char **envp)
-{
-	int	fd[2];
-
-	if (pipe(fd) == -1)
-		return (early_exit());
-	spawn_child(prev_read, fd[1], cmd, envp);
-}
-
-void	special_case(char *cmd, char **envp)
-{
-	spawn_child(prev_read, outfile, cmd, envp);
+	}
 }

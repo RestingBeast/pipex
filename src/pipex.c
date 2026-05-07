@@ -35,11 +35,8 @@ int	main(int argc, char **argv, char **envp)
 		return (file_error(argv[argc - 1]));
 	i = 1;
 	prev_read = infile;
-	while (++i < argc - 1)
-	{
-		
-		prev_read = 
-	}
-	spawn_child(fd, argv + 2, envp);
+	while (++i < argc - 2)
+		prev_read = exe_cmd(prev_read, argv[i], envp);
+	spawn_last_child(prev_read, outfile, argv[i], envp);
 	return (0);
 }
