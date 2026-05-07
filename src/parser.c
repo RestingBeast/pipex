@@ -17,6 +17,7 @@ static char	**get_env_path(char **envp)
 	char	**path;
 	char	*tmp;
 
+	path = NULL;
 	if (envp == NULL || *envp == NULL)
 		return (ft_split("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", ':'));
 	while (*envp != NULL)
@@ -25,6 +26,8 @@ static char	**get_env_path(char **envp)
 			path = ft_split(*envp, ':');
 		envp++;
 	}
+	if (!path)
+		return (ft_split("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", ':'));
 	tmp = path[0];
 	path[0] = ft_substr(tmp, 5, ft_strlen(tmp) - 5);
 	free(tmp);

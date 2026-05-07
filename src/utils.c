@@ -20,7 +20,9 @@ void	early_exit(void)
 
 void	free_double_ptr(char **argv)
 {
-	int	i = 0;
+	int	i;
+
+	i = 0;
 	while (argv[i] != NULL)
 		free(argv[i++]);
 	free(argv);
@@ -46,17 +48,18 @@ void	spawn_child(int read, int *fds, char *cmd, char **envp)
 	}
 	else
 	{
+		close(read);
 		close(fds[1]);
 	}
 }
 
-int	spawn_last_child(int read, int write, char *cmd, char **envp)
+void	spawn_last_child(int read, int write, char *cmd, char **envp)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == -1)
-		return (early_exit(), 0);
+		return (early_exit());
 	if (pid == 0)
 	{
 		if (dup2(read, STDIN_FILENO) == -1)
@@ -72,16 +75,12 @@ int	spawn_last_child(int read, int write, char *cmd, char **envp)
 		close(read);
 		close(write);
 	}
-	return (pid);
 }
 
-void	kill_zombies(int count, int last_pid)
+void	kill_zombies(int count)
 {
 	int	status;
-	int	exit_status;
 
-	waitpid(last_pid, &exit_status, 0);
-	while (--count > 1)
+	while (count-- > 1)
 		waitpid(-1, &status, 0);
-	exit(exit_status);
 }

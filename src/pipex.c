@@ -47,6 +47,7 @@ int	main(int argc, char **argv, char **envp)
 	prev_read = infile;
 	while (++i < argc - 2)
 		prev_read = exe_cmd(prev_read, argv[i], envp);
-	kill_zombies(i, spawn_last_child(prev_read, outfile, argv[i], envp));
+	spawn_last_child(prev_read, outfile, argv[i], envp);
+	kill_zombies(i);
 	return (0);
 }
