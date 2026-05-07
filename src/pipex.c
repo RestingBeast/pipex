@@ -18,7 +18,7 @@ static int	file_error(char *filename)
 	return (0);
 }
 
-static int		exe_cmd(int prev_fd, char *cmd, char **envp)
+static int	exe_cmd(int prev_fd, char *cmd, char **envp)
 {
 	int	fds[2];
 

@@ -69,13 +69,13 @@ void	parse_cmd_and_execute(char *cmd, char **envp)
 		ft_putstr_fd(argv[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
 		free_double_ptr(argv);
-		_exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	if (execve(filename, argv, envp) == -1)
 	{
 		free(filename);
 		free_double_ptr(argv);
 		perror("pipex");
-		_exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 }
