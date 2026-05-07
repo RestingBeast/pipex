@@ -32,6 +32,7 @@ void	kill_zombies(int count);
 void	parse_cmd_and_execute(char *cmd, char **envp);
 
 /* Bonus Part */
+# define HERE_DOC "here_doc"
 int		is_delimiter(char *line, char *delimiter);
 int		ft_streq(char *s1, char *s2);
 
