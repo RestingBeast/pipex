@@ -18,29 +18,19 @@ void	early_exit(void)
 	exit(EXIT_FAILURE);
 }
 
-void	free_double_ptr(char **argv)
-{
-	int	i;
-
-	i = 0;
-	while (argv[i] != NULL)
-		free(argv[i++]);
-	free(argv);
-}
-
 void	spawn_child(int read, int *fds, char *cmd, char **envp)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == -1)
-		return (early_exit());
+		early_exit();
 	if (pid == 0)
 	{
 		if (dup2(read, STDIN_FILENO) == -1)
-			_exit(EXIT_FAILURE);
+			early_exit();
 		if (dup2(fds[1], STDOUT_FILENO) == -1)
-			_exit(EXIT_FAILURE);
+			early_exit();
 		close(read);
 		close(fds[0]);
 		close(fds[1]);
@@ -59,13 +49,13 @@ void	spawn_last_child(int read, int write, char *cmd, char **envp)
 
 	pid = fork();
 	if (pid == -1)
-		return (early_exit());
+		early_exit();
 	if (pid == 0)
 	{
 		if (dup2(read, STDIN_FILENO) == -1)
-			exit(EXIT_FAILURE);
+			early_exit();
 		if (dup2(write, STDOUT_FILENO) == -1)
-			exit(EXIT_FAILURE);
+			early_exit();
 		close(read);
 		close(write);
 		parse_cmd_and_execute(cmd, envp);
@@ -75,6 +65,16 @@ void	spawn_last_child(int read, int write, char *cmd, char **envp)
 		close(read);
 		close(write);
 	}
+}
+
+int	exe_cmd(int prev_fd, char *cmd, char **envp)
+{
+	int	fds[2];
+
+	if (pipe(fds) == -1)
+		return (early_exit(), 0);
+	spawn_child(prev_fd, fds, cmd, envp);
+	return (fds[0]);
 }
 
 void	kill_zombies(int count)

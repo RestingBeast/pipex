@@ -12,42 +12,37 @@
 
 #include "pipex.h"
 
-static int	file_error(char *filename)
-{
-	ft_printf("pipex: %s: %s\n", filename, strerror(errno));
-	return (0);
-}
-
-static int	exe_cmd(int prev_fd, char *cmd, char **envp)
-{
-	int	fds[2];
-
-	if (pipe(fds) == -1)
-		return (early_exit(), 0);
-	spawn_child(prev_fd, fds, cmd, envp);
-	return (fds[0]);
-}
-
-int	main(int argc, char **argv, char **envp)
+static void	start_pipex(int argc, char **argv, char **envp)
 {
 	int	infile;
 	int	outfile;
 	int	prev_read;
 	int	i;
 
-	if (argc != 5)
-		return (0);
 	infile = open(argv[1], O_RDONLY);
 	if (infile == -1)
-		return (file_error(argv[1]));
+	{
+		ft_printf("pipex: %s: %s\n", argv[1], strerror(errno));
+		return ;
+	}
 	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
-		return (file_error(argv[argc - 1]));
+	{
+		ft_printf("pipex: %s: %s\n", argv[argc - 1], strerror(errno));
+		return ;
+	}
 	i = 1;
 	prev_read = infile;
 	while (++i < argc - 2)
 		prev_read = exe_cmd(prev_read, argv[i], envp);
 	spawn_last_child(prev_read, outfile, argv[i], envp);
 	kill_zombies(i);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	if (argc != 5)
+		return (0);
+	start_pipex(argc, argv, envp);
 	return (0);
 }

@@ -12,6 +12,16 @@
 
 #include "pipex.h"
 
+static void	free_double_ptr(char **argv)
+{
+	int	i;
+
+	i = 0;
+	while (argv[i] != NULL)
+		free(argv[i++]);
+	free(argv);
+}
+
 static char	**get_env_path(char **envp)
 {
 	char	**path;
@@ -75,7 +85,6 @@ void	parse_cmd_and_execute(char *cmd, char **envp)
 	{
 		free(filename);
 		free_double_ptr(argv);
-		perror("pipex");
-		exit(EXIT_FAILURE);
+		early_exit();
 	}
 }

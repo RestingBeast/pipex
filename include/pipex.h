@@ -23,9 +23,9 @@
 
 // utils.c
 void	early_exit(void);
-void	free_double_ptr(char **argv);
 void	spawn_child(int read, int *fds, char *cmd, char **envp);
 void	spawn_last_child(int read, int write, char *cmd, char **envp);
+int 	exe_cmd(int prev_fd, char *cmd, char **envp);
 void	kill_zombies(int count);
 // parser.c
 void	parse_cmd_and_execute(char *cmd, char **envp);
