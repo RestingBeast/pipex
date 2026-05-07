@@ -21,16 +21,10 @@ static void	start_pipex(int argc, char **argv, char **envp)
 
 	infile = open(argv[1], O_RDONLY);
 	if (infile == -1)
-	{
-		ft_printf("pipex: %s: %s\n", argv[1], strerror(errno));
-		return ;
-	}
+		early_exit(argv[1]);
 	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
-	{
-		ft_printf("pipex: %s: %s\n", argv[argc - 1], strerror(errno));
-		return ;
-	}
+		early_exit(argv[argc - 1]);
 	i = 1;
 	prev_read = infile;
 	while (++i < argc - 2)
