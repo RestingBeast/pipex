@@ -2,7 +2,6 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 MAKE = make
 NAME = pipex
-BONUS = pipex
 FTPRINTF_DIR = ftprintf
 FTPRINTF = $(FTPRINTF_DIR)/libftprintf.a
 GNL_DIR = get_next_line
@@ -12,11 +11,11 @@ SRC = src/pipex.c \
       src/parser.c
 OBJ = $(SRC:.c=.o)
 SRC_BONUS = src/utils.c \
-			src/parser.c \
-			bonus/pipex_bonus.c \
-			bonus/utils_bonus.c \
-			$(GNL_DIR)/get_next_line.c \
-      		$(GNL_DIR)/get_next_line_utils.c
+	    src/parser.c \
+	    bonus/pipex_bonus.c \
+	    bonus/utils_bonus.c \
+	    $(GNL_DIR)/get_next_line.c \
+      	$(GNL_DIR)/get_next_line_utils.c
 OBJ_BONUS = $(SRC_BONUS:.c=.o)
 
 all:	$(FTPRINTF) $(NAME)
