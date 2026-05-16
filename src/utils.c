@@ -86,5 +86,5 @@ void	kill_zombies(int count, int last_pid)
 	waitpid(last_pid, &exit_status, 0);
 	while (--count > 1)
 		waitpid(-1, &status, 0);
-	exit(WEXITSTATUS(exit_status));
+	exit((exit_status >> 8) & 0xff);
 }
