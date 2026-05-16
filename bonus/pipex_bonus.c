@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kkhant-z <kkhant-z@student.42singapor      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/16 11:19:17 by kkhant-z          #+#    #+#             */
+/*   Updated: 2026/05/16 11:19:18 by kkhant-z         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 static int	get_here_doc(char *delimiter)
 {
 	char	*line;
 	int		fd;
-	
+
 	fd = open(HERE_DOC, O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return (-1);
@@ -21,7 +33,7 @@ static int	get_here_doc(char *delimiter)
 	return (fd);
 }
 
-static void check_here_doc(int *infile, int *outfile, int argc, char **argv)
+static void	check_here_doc(int *infile, int *outfile, int argc, char **argv)
 {
 	int	option;
 	int	flags;
@@ -37,11 +49,7 @@ static void check_here_doc(int *infile, int *outfile, int argc, char **argv)
 		*infile = open(argv[1], O_RDONLY);
 		flags = O_RDWR | O_CREAT | O_TRUNC;
 	}
-	if (*infile == -1)
-			early_exit(argv[1]);
 	*outfile = open(argv[argc - 1], flags, 0644);
-	if (*outfile == -1)
-		early_exit(argv[argc - 1]);
 }
 
 static void	start_pipex(int argc, char **argv, char **envp)
@@ -49,6 +57,7 @@ static void	start_pipex(int argc, char **argv, char **envp)
 	int	outfile;
 	int	prev_read;
 	int	option;
+	int	pid;
 	int	i;
 
 	option = ft_streq(argv[1], HERE_DOC);
@@ -56,10 +65,10 @@ static void	start_pipex(int argc, char **argv, char **envp)
 	i = option + 1;
 	while (++i < argc - 2)
 		prev_read = exe_cmd(prev_read, argv[i], envp);
-	spawn_last_child(prev_read, outfile, argv[i], envp);
-	kill_zombies(i - option);
+	pid = spawn_last_child(prev_read, outfile, argv[i], envp);
 	if (option == 1)
 		unlink(HERE_DOC);
+	kill_zombies(i - option, pid);
 }
 
 int	main(int argc, char **argv, char **envp)

@@ -3,3 +3,6 @@ pipex
 infile
 outfile
 .bonus
+infiles/
+outfiles/
+42_pipex_tester/

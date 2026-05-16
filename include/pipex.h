@@ -20,19 +20,19 @@
 # include <sys/wait.h>
 # include "ft_printf.h"
 # include "get_next_line.h"
+# define HERE_DOC "here_doc"
 
 /* Mandatory Part */
 // utils.c
-void	early_exit(char *filename);
+void	early_exit(void);
 void	spawn_child(int read, int *fds, char *cmd, char **envp);
-void	spawn_last_child(int read, int write, char *cmd, char **envp);
+int		spawn_last_child(int read, int write, char *cmd, char **envp);
 int		exe_cmd(int prev_fd, char *cmd, char **envp);
-void	kill_zombies(int count);
+void	kill_zombies(int count, int last_pid);
 // parser.c
 void	parse_cmd_and_execute(char *cmd, char **envp);
 
 /* Bonus Part */
-# define HERE_DOC "here_doc"
 int		is_delimiter(char *line, char *delimiter);
 int		ft_streq(char *s1, char *s2);
 

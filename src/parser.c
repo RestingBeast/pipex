@@ -67,24 +67,34 @@ static char	*find_executable(char *cmd, char **envp)
 	return (NULL);
 }
 
+void	log_error(char *message)
+{
+	ft_putstr_fd(message, 2);
+	ft_putstr_fd(": command not found\n", 2);
+}
+
 void	parse_cmd_and_execute(char *cmd, char **envp)
 {
 	char	**argv;
 	char	*filename;
 
+	if (ft_strlen(cmd) == 0)
+	{
+		log_error("''");
+		exit(127);
+	}
 	argv = ft_split(cmd, ' ');
 	filename = find_executable(argv[0], envp);
 	if (!filename)
 	{
-		ft_putstr_fd(argv[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
+		log_error(argv[0]);
 		free_double_ptr(argv);
-		exit(EXIT_FAILURE);
+		exit(127);
 	}
 	if (execve(filename, argv, envp) == -1)
 	{
 		free(filename);
 		free_double_ptr(argv);
-		early_exit(NULL);
+		early_exit();
 	}
 }
