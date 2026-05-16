@@ -12,70 +12,66 @@
 
 #include "pipex.h"
 
-void	early_exit(void)
+void	early_exit(char *filename)
 {
-	perror("pipex");
+	if (filename)
+		ft_printf("pipex: %s: %s\n", filename, strerror(errno));
+	else
+		perror("pipex");
 	exit(EXIT_FAILURE);
 }
 
-void	spawn_child(int read, int *fds, char *cmd, char **envp)
+int	spawn_first_child(char *infile, int *fds, char *cmd, char **envp)
 {
 	pid_t	pid;
+	int		read;
 
 	pid = fork();
 	if (pid == -1)
-		early_exit();
+		early_exit(NULL);
 	if (pid == 0)
 	{
+		read = open(infile, O_RDONLY);
+		if (read == -1)
+			early_exit(infile);
 		if (dup2(read, STDIN_FILENO) == -1)
-			early_exit();
+			early_exit(NULL);
 		if (dup2(fds[1], STDOUT_FILENO) == -1)
-			early_exit();
+			early_exit(NULL);
 		close(read);
 		close(fds[0]);
 		close(fds[1]);
 		parse_cmd_and_execute(cmd, envp);
 	}
 	else
-	{
-		close(read);
 		close(fds[1]);
-	}
+	return (fds[0]);
 }
 
-int	spawn_last_child(int read, int write, char *cmd, char **envp)
+int	spawn_last_child(int read, t_outfile *o, char *cmd, char **envp)
 {
 	pid_t	pid;
+	int		write;
 
 	pid = fork();
 	if (pid == -1)
-		early_exit();
+		early_exit(NULL);
 	if (pid == 0)
 	{
+		write = open(o->filename, o->flags, 0644);
+		if (write == -1)
+			early_exit(o->filename);
 		if (dup2(read, STDIN_FILENO) == -1)
-			early_exit();
+			early_exit(NULL);
 		if (dup2(write, STDOUT_FILENO) == -1)
-			early_exit();
+			early_exit(NULL);
 		close(read);
 		close(write);
 		parse_cmd_and_execute(cmd, envp);
 	}
 	else
-	{
 		close(read);
-		close(write);
-	}
 	return (pid);
-}
-
-int	exe_cmd(int prev_fd, char *cmd, char **envp)
-{
-	int	fds[2];
-
-	if (pipe(fds) == -1)
-		return (early_exit(), 0);
-	spawn_child(prev_fd, fds, cmd, envp);
-	return (fds[0]);
 }
 
 void	kill_zombies(int count, int last_pid)

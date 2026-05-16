@@ -33,39 +33,37 @@ static int	get_here_doc(char *delimiter)
 	return (fd);
 }
 
-static void	check_here_doc(int *infile, int *outfile, int argc, char **argv)
+static int	exe_first_cmd(char *infile, char *cmd, char **envp)
 {
-	int	option;
-	int	flags;
+	int	fds[2];
 
-	option = ft_streq(argv[1], HERE_DOC);
-	if (option == 1)
-	{
-		*infile = get_here_doc(argv[2]);
-		flags = O_RDWR | O_CREAT | O_APPEND;
-	}
-	else
-	{
-		*infile = open(argv[1], O_RDONLY);
-		flags = O_RDWR | O_CREAT | O_TRUNC;
-	}
-	*outfile = open(argv[argc - 1], flags, 0644);
+	if (pipe(fds) == -1)
+		early_exit(NULL);
+	return (spawn_first_child(infile, fds, cmd, envp));
 }
 
 static void	start_pipex(int argc, char **argv, char **envp)
 {
-	int	outfile;
-	int	prev_read;
-	int	option;
-	int	pid;
-	int	i;
+	int			prev_read;
+	int			option;
+	int			pid;
+	int			i;
+	t_outfile	o;
 
 	option = ft_streq(argv[1], HERE_DOC);
-	check_here_doc(&prev_read, &outfile, argc, argv);
-	i = option + 1;
+	if (option == 1)
+		prev_read = get_here_doc(argv[2]);
+	else
+		prev_read = exe_first_cmd(argv[1], argv[2], envp);
+	i = 2;
 	while (++i < argc - 2)
 		prev_read = exe_cmd(prev_read, argv[i], envp);
-	pid = spawn_last_child(prev_read, outfile, argv[i], envp);
+	o.filename = argv[argc - 1];
+	if (option == 1)
+		o.flags = O_RDWR | O_CREAT | O_APPEND;
+	else
+		o.flags = O_RDWR | O_CREAT | O_TRUNC;
+	pid = spawn_last_child(prev_read, &o, argv[i], envp);
 	if (option == 1)
 		unlink(HERE_DOC);
 	kill_zombies(i - option, pid);

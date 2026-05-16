@@ -95,6 +95,6 @@ void	parse_cmd_and_execute(char *cmd, char **envp)
 	{
 		free(filename);
 		free_double_ptr(argv);
-		early_exit();
+		early_exit(NULL);
 	}
 }

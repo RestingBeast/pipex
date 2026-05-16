@@ -14,20 +14,18 @@
 
 static void	start_pipex(int argc, char **argv, char **envp)
 {
-	int	infile;
-	int	outfile;
-	int	prev_read;
-	int	last_pid;
-	int	i;
+	int			fds[2];
+	int			last_pid;
+	int			prev_read;
+	t_outfile	outfile;
 
-	infile = open(argv[1], O_RDONLY);
-	outfile = open(argv[argc - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
-	i = 1;
-	prev_read = infile;
-	while (++i < argc - 2)
-		prev_read = exe_cmd(prev_read, argv[i], envp);
-	last_pid = spawn_last_child(prev_read, outfile, argv[i], envp);
-	kill_zombies(i, last_pid);
+	if (pipe(fds) == -1)
+		early_exit(NULL);
+	prev_read = spawn_first_child(argv[1], fds, argv[2], envp);
+	outfile.filename = argv[argc - 1];
+	outfile.flags = O_RDWR | O_CREAT | O_TRUNC;
+	last_pid = spawn_last_child(prev_read, &outfile, argv[3], envp);
+	kill_zombies(3, last_pid);
 }
 
 int	main(int argc, char **argv, char **envp)
