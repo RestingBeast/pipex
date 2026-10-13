@@ -52,6 +52,8 @@ static char	*find_executable(char *cmd, char **envp)
 	int		i;
 
 	i = 0;
+	if (ft_strchr(cmd, '/') != NULL)
+		return (cmd);
 	filename = ft_strjoin("/", cmd);
 	path = get_env_path(envp);
 	while (path[i] != NULL)
